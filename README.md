@@ -89,27 +89,45 @@
 			});
 
 	7.📡 REST API ที่สร้าง
+
+  		import Game from './models/Game.js'; //Schema จาก MongoDB
   
-		GET /api/history ดึงประวัติการเล่นทั้งหมด
+		GET Endpoint :/api/history ดึงประวัติการเล่นทั้งหมด
 
-			const games = await Game.find(); // ดึงข้อมูลทั้งหมดจาก collection 'games'
-			res.status(200).json(games);     // ส่งกลับเป็น JSON
+			app.get('/api/history', async (req, res) => {
+			    try {
+			        const games = await Game.find(); //ดึงข้อมูลทั้งหมดจาก Collection MongoDB
+			        console.log('Fetched history:', games);
+			        res.status(200).json(games); //ส่งค่ากลับไปยัง Front-End
+			    } catch (error) {
+			        console.error('Error fetching games:', error);
+			        res.status(500).json({ message: 'Failed to fetch games', error });
+			    }
+			});
 		
-		POST /api/history ใช้บันทึกข้อมูลเกมที่เล่นจบแล้ว
+		POST Endpoint : /api/history ใช้บันทึกข้อมูลเกมที่เล่นจบแล้ว
 
-		    const { date, boardSize, winner, moves, winningCells } = req.body; //รับข้อมูลจาก body
-		
-		//สร้างตัวแปรเพื่อรับข้อมูล
-		    const game = new Game({
-		      date,
-		      boardSize,
-		      winner,
-		      moves,
-		      winningCells,
-		    });
-		
-		    const savedGame = await game.save(); // บันทึกลง MongoDB
-		    res.status(201).json({ message: 'Game saved successfully', game: savedGame }); //ส่งสถานะ 201 กลับไปยัง User
+			app.post('/api/history', async (req, res) => {
+			    try {
+			        const { date, boardSize, winner, moves, winningCells } = req.body; //รับค่าจาก Body
+			        console.log('posttt' , req.body)
+
+				//นำข้อมูลจาก Body เพื่อเก็บไปยัง Schema
+			        const game = new Game({
+			            date,
+			            boardSize,
+			            winner,
+			            moves,
+			            winningCells,
+			        });
+			
+			        const savedGame = await game.save(); //นำข้อมูลที่เตรียมไว้จาก Schema ไป Save ที่ MongoDB
+			        res.status(201).json({ message: 'Game saved successfully', game: savedGame }); //ส่งสถานะกลับไปยัง User
+			    } catch (error) {
+			        console.error('Error saving game:', error);
+			        res.status(500).json({ message: 'Failed to save game', error });
+			    }
+			});
 
 
 
@@ -119,16 +137,25 @@
 🔁 สถานะสำคัญ (State)
 
 	boardSize – ขนาดกระดานที่ผู้เล่นกำหนดตอนเริ่มเกม (ขั้นต่ำ 3)
+ 	const [boardSize, setBoardSize] = useState(3);
 	
 	board – เก็บค่ากระดานทั้งหมด เช่น ['X', null, 'O', ...]
-	
+	const [board, setBoard] = useState([]);
+ 
 	turn – ระบุว่าใครเป็นคนเล่นในรอบนั้น ('X' = ผู้เล่น, 'O' = บอท)
-	
+	const [turn, setTurn] = useState('X');
+ 
 	gameOver – บอกสถานะว่าเกมจบแล้วหรือยัง
+ 	const [gameOver, setGameOver] = useState(false);
 	
 	winningCells – เก็บ index ช่องที่ชนะ เพื่อใส่สีพื้นหลัง
+ 	const [winningCells, setWinningCells] = useState([]); 
 	
 	moves – ลำดับการเดินหมาก สำหรับการบันทึกประวัติและ Replay
+ 	const [moves, setMoves] = useState([]);
+
+	totalCells - จำนวน Boxs ที่ User กำหนด
+  	const totalCells = boardSize * boardSize;
 
 ⚙️ ฟังก์ชันหลัก
 
