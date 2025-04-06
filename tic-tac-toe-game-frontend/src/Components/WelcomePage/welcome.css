@@ -1,0 +1,27 @@
+.video-background {
+    position: relative;
+    width: 100%;
+    height: 100vh; /* หรือขนาดที่คุณต้องการ */
+    overflow: hidden;
+  }
+  
+  .video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* ทำให้วิดีโอครอบคลุมพื้นที่ */
+    transform: translate(-50%, -50%);
+    z-index: -1; /* วางวิดีโอไว้ด้านหลัง */
+  }
+  
+  .content {
+    position: relative;
+    z-index: 1; /* ให้เนื้อหาอยู่ด้านหน้า */
+    color: white; /* ปรับสีตามความเหมาะสม */
+    font-size: 2rem;
+    text-align: center;
+    top: 50%;
+    transform: translateY(-50%);
+  }
